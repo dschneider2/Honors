@@ -1,0 +1,65 @@
+import datetime, urllib, os
+
+from datetime import timedelta, date
+from HTMLParser import HTMLParser
+
+# create a subclass and override the handler methods
+# this class parses through HTML code and picks out the links
+class MyHTMLParser(HTMLParser):
+  def __init__(self):
+    HTMLParser.__init__(self)
+    self.data = 0
+    
+  def handle_starttag(self, tag, attrs):
+    if tag == 'a':
+        for name, value in attrs:
+            if (name=="href" and value.count('/')==5): #&& "/lkml/20" not in somestring:
+                reverse = value[::-1]
+                myNumberReversed = reverse[0:reverse.index('/', 0)]
+                myNumber = int(myNumberReversed[::-1])
+                if (myNumber>self.data):
+                    self.data=myNumber
+  
+#opens the url and grabs the html code
+print "Start Time: " + str(datetime.datetime.now())
+sYear = raw_input('Start Year:')
+sMonth = raw_input('Start Month:')
+sDay = raw_input('Start Day:')
+
+eYear = raw_input('End Year:')
+eMonth = raw_input('End Month:')
+eDay = raw_input('End Day:')
+
+eDate = date(int(eYear),int(eMonth),int(eDay))
+sDate = date(int(sYear),int(sMonth),int(sDay))
+
+eDate = eDate + timedelta(days=1)
+
+#creates an id for the emails being stored
+id = long(eYear*10+1);
+
+
+#Goes through each date from the start date entered to the end date and finds all messages associated with that date
+while (sDate.year!=eDate.year or sDate.month!=eDate.month or sDate.day!=eDate.day):
+    path = "C:/Users/danie_000/Documents/Elon/Big Honors Project of Death/Python/" + str(sDate.year) + "/" + str(sDate.month) + sDate.strftime("%B") + "/" + str(sDate.day)
+    try:
+        os.makedirs(path)
+    except OSError:
+        pass
+    sock = urllib.urlopen("https://lkml.org/lkml/"+str(sDate.year)+"/"+str(sDate.month)+"/"+str(sDate.day))
+    htmlSource = sock.read() 
+    sock.close()  
+    parser = MyHTMLParser()
+    parser.feed(htmlSource)
+    for x in range(1, (parser.data)+1):
+        sock = urllib.urlopen("https://lkml.org/lkml/2015/2/25/" + str(x))
+        f = open(path + "/" + str(id)+ '.txt','w')
+        myUrl = "https://lkml.org/lkml/"+str(sDate.year)+"/"+str(sDate.month)+"/"+str(sDate.day) + "/" + str(x)
+        f.write(myUrl)
+        htmlSource = sock.read()
+        f.write(myUrl+'\n\n'+htmlSource+'-------------------------------------------------------\n\n\n') 
+        f.close()
+        id=id+1;
+    sDate = sDate + timedelta(days=1)
+
+print "End Time: " + str(datetime.datetime.now())
