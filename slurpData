@@ -37,7 +37,19 @@ sDate = date(int(sYear),int(sMonth),int(sDay))
 eDate = eDate + timedelta(days=1)
 
 #creates an id for the emails being stored
-id = long(int(eYear)*10+1);
+id = -1;
+
+try:
+    idPath = "C:/Users/dschneider2/Desktop/honors/" + sYear
+    os.makedirs(idPath)
+    id = 1
+    f = open(idPath + "/currentId" + '.txt','w')
+    f.write(str(id))
+    f.close()
+except OSError:
+    f = open(idPath + "/currentId" + '.txt','r')
+    id = long(f.read())
+    pass
 
 
 #Goes through each date from the start date entered to the end date and finds all messages associated with that date
@@ -56,13 +68,16 @@ while (sDate.year!=eDate.year or sDate.month!=eDate.month or sDate.day!=eDate.da
     print myUrl
     for x in range(1, (parser.data)+1):
         sock = urllib.urlopen("https://lkml.org/lkml/2015/2/25/" + str(x))
-        f = open(path + "/" + str(id)+ '.txt','w')
+        f = open(path + "/" + str(sDate.year) + str(id)+ '.txt','w')
         myUrl = "https://lkml.org/lkml/"+str(sDate.year)+"/"+str(sDate.month)+"/"+str(sDate.day) + "/" + str(x)
         f.write(myUrl)
         htmlSource = sock.read()
         f.write(myUrl+'\n\n'+htmlSource+'-------------------------------------------------------\n\n\n') 
         f.close()
         id=id+1;
+        f = open(idPath + "/currentId" + '.txt','w')
+        f.write(str(id))
+        f.close()
     sDate = sDate + timedelta(days=1)
 
 print "End Time: " + str(datetime.datetime.now())
