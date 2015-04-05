@@ -65,9 +65,9 @@ while (sDate.year!=eDate.year or sDate.month!=eDate.month or sDate.day!=eDate.da
     parser = MyHTMLParser()
     parser.feed(htmlSource)
     myUrl = "https://lkml.org/lkml/"+str(sDate.year)+"/"+str(sDate.month)+"/"+str(sDate.day) + "/"
-    print myUrl
     for x in range(1, (parser.data)+1):
-        sock = urllib.urlopen("https://lkml.org/lkml/2015/2/25/" + str(x))
+        print myUrl +str(x)
+        sock = urllib.urlopen(myUrl + str(x))
         f = open(path + "/" + str(sDate.year) + str(id)+ '.txt','w')
         myUrl = "https://lkml.org/lkml/"+str(sDate.year)+"/"+str(sDate.month)+"/"+str(sDate.day) + "/" + str(x)
         f.write(myUrl)
