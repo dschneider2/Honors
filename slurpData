@@ -67,7 +67,8 @@ while (sDate.year!=eDate.year or sDate.month!=eDate.month or sDate.day!=eDate.da
     myUrl = "https://lkml.org/lkml/"+str(sDate.year)+"/"+str(sDate.month)+"/"+str(sDate.day) + "/"
     print "NEW DAY" + myUrl
     if ((parser.data)==0):
-        time.sleep(7)
+        print "ERROR SERVER IS DOWN"
+        time.sleep(15)
     for x in range(1, (parser.data)+1):
         myUrl = "https://lkml.org/lkml/"+str(sDate.year)+"/"+str(sDate.month)+"/"+str(sDate.day) + "/" + str(x)
         print myUrl
