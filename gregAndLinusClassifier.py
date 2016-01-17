@@ -267,7 +267,6 @@ for x in range(0, numTests):
     #the sum of the scores and ratios will be averaged with the number of times the word appeared as a classifier term later in the program
     #Note: the custom features are ignored for ratios as they are not part of the original vectorizer component, so their ratios cannot be computed
     for i in ch2.get_support(indices=True):
-        print feature_names[i]
         if feature_names[i] in avgAllTerms.keys():
             avgAllTerms[feature_names[i]]=(avgAllTerms[feature_names[i]][0]+ch2.scores_[i],avgAllTerms[feature_names[i]][1]+1)
         else:
