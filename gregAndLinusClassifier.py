@@ -37,7 +37,7 @@ from nltk.tokenize import word_tokenize
 #that build a confusion matrix overall for the number of iterations the classifier ran
 #averageAllTerms computes the average score for each of the most discerning words computed by the classifier
 #avgAllRatios computes the Linus:Greg ratio for each of the most discerning words computed by the classifier
-numTests= 1
+numTests= 3
 overallAccuracy=0
 avgTruePositives=0
 avgFalseNegative=0
@@ -57,23 +57,7 @@ def findRatioForCertainWord(vectorizer,clf,word):
             logTransformedScore1=pow(2,myScore1)
             logTransformedScore2=pow(2,myScore2)
             return logTransformedScore1/(logTransformedScore1+logTransformedScore2)
-            #print word + " linus:greg         " + str(logTransformedScore1/(logTransformedScore1+logTransformedScore2)) + " : " + str(logTransformedScore2/(logTransformedScore1+logTransformedScore2))
-            
-
-#finds the Linus:Greg ratio of all of the most discerning words as found by the vectorizer element of the classifier
-def ratioForTopScorers(vectorizer,clf,myDict):
-    feature_names = vectorizer.get_feature_names()
-    coefs_with_fns = sorted(zip(clf.feature_log_prob_[0],clf.feature_log_prob_[1], feature_names))
-    compiledRatioPhrases =[]
-    for (myScore1,myScore2,myName) in coefs_with_fns:
-        if myName in myDict:
-            logTransformedScore1=pow(2,myScore1)
-            logTransformedScore2=pow(2,myScore2)
-            compiledRatioPhrases.append((myName,"linus : greg =",str(logTransformedScore1/(logTransformedScore1+logTransformedScore2)) + " : " + str(logTransformedScore2/(logTransformedScore1+logTransformedScore2))))
-            #print "Contains("+myName + ")\t\t\tspam : ham =\t" + str(logTransformedScore1/(logTransformedScore1+logTransformedScore2)) + " : " + str(logTransformedScore2/(logTransformedScore1+logTransformedScore2))
-    for args in compiledRatioPhrases:
-        print '{0:<30} {1:>8} {2:>8}'.format(*args)
-        
+            #print word + " linus:greg         " + str(logTransformedScore1/(logTransformedScore1+logTransformedScore2)) + " : " + str(logTransformedScore2/(logTransformedScore1+logTransformedScore2))                  
 
 # Initialize posCorpus and negCorpus arrays
 # These arrays will hold emails whether written by Greg (posCorpus) or Linus (negCorpus)
@@ -159,7 +143,7 @@ for x in range(0, numTests):
                     adverbCount=adverbCount+1
         except:
             pass
-        dataTrainAdverbCount.append(adverbCount);
+        dataTrainAdverbCount.append(float(adverbCount));
         
         
         #Count expletives and number of ! marks and put them in lists
@@ -210,8 +194,7 @@ for x in range(0, numTests):
                     adverbCount=adverbCount+1
         except:
             pass
-        dataTestAdverbCount.append(adverbCount);
-        
+        dataTestAdverbCount.append(float(adverbCount));
         
         expletiveCount=0
         for word in doc.split():
@@ -266,6 +249,8 @@ for x in range(0, numTests):
     #calculate the top 100 most influential features and put them in a dictionary with their score
     nFeats = 100
     ch2 = SelectKBest(chi2, k=nFeats)
+    X_train_2 = ch2.fit_transform(X_train, y_train)
+    X_test_2 = ch2.transform(X_test)
     
     #find all feature_names and add the custom feature names to this list
     feature_names = vectorizer.get_feature_names()
@@ -282,6 +267,7 @@ for x in range(0, numTests):
     #the sum of the scores and ratios will be averaged with the number of times the word appeared as a classifier term later in the program
     #Note: the custom features are ignored for ratios as they are not part of the original vectorizer component, so their ratios cannot be computed
     for i in ch2.get_support(indices=True):
+        print feature_names[i]
         if feature_names[i] in avgAllTerms.keys():
             avgAllTerms[feature_names[i]]=(avgAllTerms[feature_names[i]][0]+ch2.scores_[i],avgAllTerms[feature_names[i]][1]+1)
         else:
