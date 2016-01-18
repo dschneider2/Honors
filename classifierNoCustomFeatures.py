@@ -29,6 +29,7 @@ from scipy import sparse
 from sklearn import preprocessing
 import nltk
 from nltk.tokenize import word_tokenize
+import math
 
 #Initialize multiple variables for this program
 #numtests is the number of iterations the classifier will run
@@ -54,8 +55,8 @@ def findRatioForCertainWord(vectorizer,clf,word):
     coefs_with_fns = sorted(zip(clf.feature_log_prob_[0],clf.feature_log_prob_[1], feature_names))
     for (myScore1,myScore2,myName) in coefs_with_fns:
         if myName ==word:
-            logTransformedScore1=pow(2,myScore1)
-            logTransformedScore2=pow(2,myScore2)
+            logTransformedScore1=math.exp(myScore1)
+            logTransformedScore2=math.exp(myScore2)
             return logTransformedScore1/(logTransformedScore1+logTransformedScore2)
             #print word + " linus:greg         " + str(logTransformedScore1/(logTransformedScore1+logTransformedScore2)) + " : " + str(logTransformedScore2/(logTransformedScore1+logTransformedScore2))                  
 
@@ -147,10 +148,10 @@ for x in range(0, numTests):
                                 #stop_words='english')
                                 
     #comment previous vectorizer and uncomment next line to run code with bigrams                        
-    vectorizer = TfidfVectorizer(min_df=1, ngram_range=(2,2))
+    #vectorizer = TfidfVectorizer(min_df=1, ngram_range=(2,2))
     
     #comment previous vectorizer and uncomment next line to run code with bigrams                        
-    #vectorizer = TfidfVectorizer(min_df=1, ngram_range=(2,2))
+    vectorizer = TfidfVectorizer(min_df=1, ngram_range=(3,3))
     
     
     X_train = vectorizer.fit_transform(dataTrain)
