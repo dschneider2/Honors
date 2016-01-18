@@ -159,8 +159,20 @@ for x in range(0, numTests):
     y_train_neg = np.zeros(len(negCorpus[:len(negCorpus)*8/10]))
     y_train = np.hstack((y_train_pos, y_train_neg))
     
+    #CHOOSE VECTORIZER TO RUN WITH
     #create a TF-IDF vectorizers and train it with the training documents
     vectorizer = TfidfVectorizer(min_df=1, stop_words='english')
+    
+    #comment previous vectorizer and uncomment next line to run code with frequency count vectors
+    #vectorizer = CountVectorizer(max_df=0.95, min_df=2,
+                                #stop_words='english')
+                                
+    #comment previous vectorizer and uncomment next line to run code with bigrams                        
+    #vectorizer = TfidfVectorizer(min_df=1, ngram_range=(2,2))
+    
+    #comment previous vectorizer and uncomment next line to run code with bigrams                        
+    #vectorizer = TfidfVectorizer(min_df=1, ngram_range=(2,2))
+    
     X_train = vectorizer.fit_transform(dataTrain)
     
     #normalize the custom features lists from 0 to 1
@@ -276,7 +288,7 @@ for x in range(0, numTests):
                 avgAllRatios[feature_names[i]]=(avgAllRatios[feature_names[i]][0]+findRatioForCertainWord(vectorizer,nb,feature_names[i]),avgAllRatios[feature_names[i]][1]+1)
             else:
                 avgAllRatios[feature_names[i]]=(findRatioForCertainWord(vectorizer,nb,feature_names[i]),1)
-        
+    print "Iteration "+ str(x+1) + " complete"
     
 
 #Compute average measures by dividing by the number of times they were tested
@@ -317,3 +329,8 @@ for word,score in sorted_terms:
 print "Most important ratios:"
 for word,linusRatio in sorted_ratios:
     print word + "            linus:greg         " + str(linusRatio[0]) + ":"+ str(1-linusRatio[0])
+    
+print "Most important ratios sorted by importance of words:"
+for word,score in sorted_terms:
+    if word in avgAllRatios.keys():
+        print word + "            linus:greg         " + str(avgAllRatios[word][0])
